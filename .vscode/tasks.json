@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"type": "shell",
-			"label": "build",
+			"label": "build test",
 			"command": "make",
 			"problemMatcher": [],
 			"args": [],
@@ -13,7 +13,24 @@
 			"presentation": {
 				"revealProblems": "onProblem",
 				"reveal": "silent",
-				// "close": true
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"type": "shell",
+			"label": "build",
+			"command": "make",
+			"problemMatcher": [],
+			"args": ["client", "server"],
+			"options": {
+				"cwd": "${workspaceFolder}/action"
+			},
+			"presentation": {
+				"revealProblems": "onProblem",
+				"reveal": "silent",
 			},
 			"group": {
 				"kind": "build",

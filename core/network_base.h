@@ -66,7 +66,7 @@ class BaseNetwork {
             int readByteCount = socket->recieve_from(packetBuffer, packetSize, fromAddress);
             if (readByteCount == 0) {
                 break;
-            } else if (readByteCount < 0) {
+            } else if (readByteCount == -WSAECONNRESET) {
                 connectionReset(fromAddress);
             } else {
                 ++recievedPacketCount;
@@ -75,7 +75,7 @@ class BaseNetwork {
         }
     }
 
-    void connectionReset(const net::address &address) {}
+    virtual void connectionReset(const net::address &address) {}
 
     void processInputQueue() {
         while (!packets.empty()) {

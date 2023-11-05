@@ -32,10 +32,18 @@ class address {
         return ::strcmp(other.raw()->sa_data, raw()->sa_data) == 0;
     }
 
+    std::string to_string() const {
+      const sockaddr_in* s = get_sockaddr_in();
+      char buffer[ 128 ];
+      InetNtop(s->sin_family, const_cast<in_addr *>(&s->sin_addr), buffer, sizeof(buffer));
+      return std::string(buffer) + ":" + std::to_string(ntohs(s->sin_port));
+    }
+
   private:
     sockaddr_in6 rawAddress;
 
     sockaddr_in *get_sockaddr_in() { return reinterpret_cast<sockaddr_in *>(&rawAddress); }
+    const sockaddr_in *get_sockaddr_in() const { return reinterpret_cast<const sockaddr_in *>(&rawAddress); }
 };
 }   // namespace net
 

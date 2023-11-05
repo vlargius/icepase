@@ -7,18 +7,19 @@
 #include "instream.h"
 #include "object.h"
 #include "linker.h"
+#include "world.h"
 
 
 namespace replication {
 class Input {
   public:
     void process(instream &stream, Linker& linker) {
-        while (!stream.empty()) {
+        while (stream.left() > (size_t) Action::Max) {
             Header header;
             header.serialize(stream);
             switch (header.action) {
             case Action::Create: {
-                Object::ptr object = Object::Factory::create(header.classId);
+                Object::ptr object = World::get().add(header.classId);
                 linker.add(object, header.netId);
                 object->read(stream);
                 break;
@@ -27,7 +28,7 @@ class Input {
                 if (Object::ptr object = linker.get(header.netId)) {
                     object->read(stream);
                 } else {
-                    object = Object::Factory::create(header.classId);
+                    object = World::get().add(header.classId);
                     object->read(stream);
                 }
                 break;

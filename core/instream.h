@@ -22,6 +22,7 @@ class instream {
 
     size_t size() const { return bitSize; }
     bool empty() const { return size() == head; }
+    size_t left() const { return bitSize - head; }
     const void* data() const { return buffer.data(); }
     void reset(size_t size_) {
         bitSize = size_;

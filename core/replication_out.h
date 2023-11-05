@@ -41,10 +41,8 @@ class Output {
     }
 
     void process(outstream &stream, const Linker &linker) {
-        for (auto &pair : netId_command) {
-            if (pair.second.hasUpdate()) {
-                Command &command = pair.second;
-                const NetId netId = pair.first;
+        for (auto & [netId, command] : netId_command) {
+            if (command.hasUpdate()) {
                 if (command.action == Action::Destroy) {
                     Header{command.action, netId}.serialize(stream);
                     command.remove(command.fields);
@@ -52,7 +50,7 @@ class Output {
                 } else {
                     Object::ptr object = linker.get(netId);
                     Header{command.action, netId, object->getType()}.serialize(stream);
-                    command.remove(object->write(stream));
+                    command.remove(object->write(stream, command.fields));
                 }
             }
         }

@@ -2,13 +2,14 @@
 
 #include <string>
 
-#include "network_base.h"
 #include "address.h"
-#include "client.h"
 #include "input.h"
 #include "instream.h"
+#include "network_base.h"
 #include "packet.h"
+#include "replication_in.h"
 #include "timer.h"
+#include "user.h"
 
 namespace client {
 class Network final : public BaseNetwork {
@@ -24,9 +25,11 @@ class Network final : public BaseNetwork {
         return instance;
     }
 
+    replication::Input replication;
+
     template <State test_state> bool is() const { return state == test_state; }
 
-    PlayerId getPlayerId() const { return playerId; }
+    UserId getUserId() const { return userId; }
 
     void init(const net::address &server_address, const std::string &name_) {
         assert(state == State::Uninitialized);
@@ -53,6 +56,17 @@ class Network final : public BaseNetwork {
             break;
         }
     }
+
+  private:
+    State state = State::Uninitialized;
+    net::address serverAddress;
+    net::address ownAddress;
+    std::string name = "default_client";
+    UserId userId;
+    Timer joiningTimer{2.f};
+
+    Network() = default;
+
     void process(instream &stream, const net::address &address) override {
         PacketType packetType;
         stream.read<(int) PacketType::Max>(packetType);
@@ -69,21 +83,11 @@ class Network final : public BaseNetwork {
             break;
         }
         default: {
-            assert("unhandled packet type");
+            assert("unhandled packet type" && false);
             break;
         }
         }
     }
-
-  private:
-    State state = State::Uninitialized;
-    net::address serverAddress;
-    net::address ownAddress;
-    std::string name = "default_client";
-    PlayerId playerId;
-    Timer joiningTimer{2.f};
-
-    Network() = default;
 
     void sendJoinRequest() {
         if (joiningTimer.elapsed()) {
@@ -114,14 +118,25 @@ class Network final : public BaseNetwork {
 
     void processConnect(instream &stream) {
         if (state == State::Joining) {
-            stream.read(playerId);
-            std::cout << "'" << name << "' connected with id " << std::hash<PlayerId>{}(playerId) << std::endl;
+            stream.read(userId);
+            std::cout << "'" << name << "' connected with id " << userId << std::endl;
             state = State::Joined;
         }
     }
 
     void processReplication(instream &stream) {
-        
+        if (state != State::Joined)
+            return;
+
+        bool isMoveProcessed;
+        stream.read(isMoveProcessed);
+        if (isMoveProcessed) {
+            float lastTimestamp;
+            stream.read(lastTimestamp);
+            Input::get().moveList.remove(lastTimestamp);
+        }
+
+        replication.process(stream, linker);
     }
 };
 }   // namespace client

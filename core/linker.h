@@ -9,6 +9,7 @@ using NetId = GenId<struct net_tag, size_t, 0>;
 
 class Linker {
   public:
+    const std::unordered_map<NetId, Object::ptr> &getNetIdObject() { return netId_object; }
 
     NetId get(Object::ptr object, bool create = false) {
         auto it = object_netId.find(object);

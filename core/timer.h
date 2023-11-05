@@ -7,7 +7,8 @@
 namespace timing {
 
 namespace {
-const float desiredFrameDuration = 0.0166f;
+// const float frameDuration = 0.0166666667f;   // frame lock at 60fps
+const float frameDuration = 1.f;
 const std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 
 float deltaTime = 0.f;
@@ -25,17 +26,15 @@ float getDeltaTime() { return deltaTime; }
 float getFrameStartTime() { return frameStartTime; }
 
 void update() {
-  double currentTime = current();
-  deltaTime = currentTime - frameStartTime;
-
-  	//frame lock at 60fps
-	while( deltaTime < desiredFrameDuration )
-	{
-		currentTime = current();
+    double currentTime = current();
     deltaTime = currentTime - frameStartTime;
-	}
 
-	frameStartTime = currentTime;
+    while (deltaTime < frameDuration) {
+        currentTime = current();
+        deltaTime = currentTime - frameStartTime;
+    }
+
+    frameStartTime = currentTime;
 }
 
 };   // namespace timing

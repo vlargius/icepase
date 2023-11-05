@@ -11,6 +11,8 @@ namespace net {
 using socket_type = SOCKET;
 using socklen_t = int;
 
+inline int get_last_error() { return WSAGetLastError(); }
+
 inline void report(const std::string &msg = "", int error = 0) {
     char buffer[256];
     buffer [0] = '\0';
@@ -25,10 +27,12 @@ inline void report(const std::string &msg = "", int error = 0) {
         nullptr);
 
     if (msg.empty())
-        std::cerr << "error::net: - " << error && buffer[0] ? std::string(buffer) : std::to_string(error) << std::endl;
+        std::cerr << "error::net: - " << (error && buffer[0] ? std::string(buffer) : std::to_string(error)) << std::endl;
     else
-        std::cerr << "error::net: " << msg  << " - " << error && buffer[0] ? std::string(buffer) : std::to_string(error) << std::endl;
+        std::cerr << "error::net: " << msg  << " - " << (error && buffer[0] ? std::string(buffer) : std::to_string(error)) << std::endl;
 }
+
+void closesocket(socket_type) {}
 
 bool set_blocking(socket_type socket_, bool is_blocking) {
     u_long state = !is_blocking;
@@ -49,6 +53,8 @@ namespace net {
 
 using socket_type = int;
 const socket_type INVALID_SOCKET = -1;
+
+inline int get_last_error() { assert("todo implement get last error" && false); return -1; }
 
 inline void report(const std::string &msg = "", int error = 0) {
     std::cerr << "error::net:" + msg + " '" + std::string(strerror(error ? error : errno)) + "' " << std::endl; 

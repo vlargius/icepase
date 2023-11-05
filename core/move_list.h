@@ -29,6 +29,12 @@ class MoveList {
         moves.emplace_back(move.getState(), timeStamp, deltaTime);
     }
 
+    void remove(float timestamp) {
+      while (!moves.empty() && moves.front().getTimestamp() <= timestamp) {
+        moves.pop_front();
+      }
+    }
+
     // void process(Action, int key_code)
 
   private:

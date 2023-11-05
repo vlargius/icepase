@@ -32,10 +32,18 @@ class udp : public ISocket<udp> {
             ::recvfrom(rawSocket, static_cast<char *>(data), length, 0, address.raw(), &addressLength);
         if (gotCount >= 0)
             return gotCount;
-        else if (!isBlocking)
-            return 0;
-        report("udp::recieve_from");
-        return -1;
+        else {
+            const int lastError = get_last_error();
+            if (lastError == WSAEWOULDBLOCK) {
+                return 0;
+            } else if (lastError == WSAECONNRESET) {
+                std::cout << "connection reset from: " + address.to_string() << std::endl;
+                return -WSAECONNRESET;
+            } else {
+                report("udp::recieve_from");
+                return -lastError;
+            }
+        }
     }
 
     friend ptr make_udp(int family);

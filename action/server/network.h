@@ -3,12 +3,13 @@
 #include <string>
 #include <unordered_map>
 
-#include "network_base.h"
 #include "address.h"
 #include "instream.h"
+#include "network_base.h"
 #include "outstream.h"
 #include "packet.h"
 #include "proxy.h"
+#include "timer.h"
 
 namespace server {
 class Network final : public BaseNetwork {
@@ -20,25 +21,74 @@ class Network final : public BaseNetwork {
 
     using BaseNetwork::init;
 
-    Proxy::ptr getClient(const PlayerId& player_id) {
-        auto it = player_client.find(player_id);
-        return it != player_client.end() ? it->second : nullptr;
+    Proxy::ptr getClient(const UserId &user_id) {
+        auto it = userId_client.find(user_id);
+        return it != userId_client.end() ? it->second : nullptr;
+    }
+
+    NetId link(Object::ptr object) {
+        const NetId netId = linker.get(object, true);
+        for (const auto &[userId, client] : userId_client) {
+            client->replication.create(netId, object->getFields());
+        }
+        return netId;
+    }
+
+    void unlink(Object::ptr object) {
+        if (const NetId netId = linker.get(object)) {
+            for (const auto &[userId, client] : userId_client) {
+                client->replication.destroy(netId);
+            }
+        }
+    }
+
+    void processOutput() {
+        for (const auto &[address, client] : address_client) {
+            if (client->isMoveProcessed) {
+                processOutput(client);
+            }
+        }
+    }
+
+    void updateFields(NetId net_id, ObjFields fields) {
+        for (const auto &[userId, client] : userId_client) {
+            client->replication.create(net_id, fields);
+        }
+    }
+
+    void processDisconnect() {
+        std::vector<Proxy::ptr> disconnectedClients;
+        const float disconnectAtTime = timing::current() - disconnectTimeout;
+        for (const auto &[userId, client] : userId_client) {
+            if (client->getLastPacketTime() < disconnectAtTime) {
+                disconnectedClients.push_back(client);
+            }
+        }
+        for (Proxy::ptr client : disconnectedClients)
+            processDisconnect(client);
     }
 
   private:
     std::unordered_map<net::address, Proxy::ptr> address_client;
-    std::unordered_map<PlayerId, Proxy::ptr> player_client;
+    std::unordered_map<UserId, Proxy::ptr> userId_client;
+    const float disconnectTimeout = 10.f;
 
     Network() = default;
 
     void process(instream &stream, const net::address &address) override {
         auto it = address_client.find(address);
         if (it == address_client.end()) {
-            handleNewClient(stream, address);
+            processNewClient(stream, address);
         } else {
             process(stream, it->second);
         }
     }
+
+    void connectionReset(const net::address &address) override {
+        auto it = address_client.find(address);
+        if (it != address_client.end())
+            processDisconnect(it->second);
+    };
 
     void sendConnectResponse(const Proxy::ptr proxy) const {
         outstream approvePacket;
@@ -47,18 +97,24 @@ class Network final : public BaseNetwork {
         send(approvePacket, proxy->getAddress());
     }
 
-    void handleNewClient(instream &stream, const net::address &address) {
+    void processNewClient(instream &stream, const net::address &address) {
         PacketType packetType;
         stream.read<(int) PacketType::Max>(packetType);
         if (packetType == PacketType::JoinRequest) {
             std::string name;
             stream.read(name);
-            Proxy::ptr newClient = std::make_shared<Proxy>(address, name, PlayerId::next());
+            Proxy::ptr newClient = std::make_shared<Proxy>(address, name, UserId::next());
             address_client[address] = newClient;
-            player_client[newClient->getId()] = newClient;
+            userId_client[newClient->getId()] = newClient;
             sendConnectResponse(newClient);
+
+            std::cout << "'" << name << "' connected with id " << newClient->getId() << std::endl;
+
+            for (const auto &[netId, object] : linker.getNetIdObject()) {
+                newClient->replication.create(netId, object->getFields());
+            }
         } else {
-            assert("todo log not joining packet type from a new address");
+            assert("todo log not joining packet type from a new address" && false);
         }
     }
 
@@ -70,7 +126,7 @@ class Network final : public BaseNetwork {
         for (; moveCount > 0; --moveCount) {
             move.serialize(stream);
             proxy->unprocessedMoves.add(move);
-            proxy->isNeedReplication = true;
+            proxy->isMoveProcessed = true;
         }
     }
 
@@ -89,30 +145,31 @@ class Network final : public BaseNetwork {
             break;
         }
         default:
-            assert("process incoming packet on server. undefined type");
-        }
-    }
-
-    void processOutput() {
-        for (const auto &it : address_client) {
-            if (it.second->isNeedReplication) {
-                processOutput(it.second);
-            }
+            assert("process incoming packet on server. undefined type" && false);
         }
     }
 
     void processOutput(Proxy::ptr proxy) {
         outstream replicationPacket;
-        replicationPacket.write<(int)PacketType::Max>(PacketType::Replication);
+        replicationPacket.write<(int) PacketType::Max>(PacketType::Replication);
 
-        replicationPacket.write(proxy->isNeedReplication);
-        if (proxy->isNeedReplication) {
+        replicationPacket.write(proxy->isMoveProcessed);
+        if (proxy->isMoveProcessed) {
             replicationPacket.write(proxy->unprocessedMoves.getLastTimestamp());
-            proxy->isNeedReplication = false;
+            proxy->isMoveProcessed = false;
         }
 
         proxy->replication.process(replicationPacket, linker);
         send(replicationPacket, proxy->getAddress());
+    }
+
+    void processDisconnect(Proxy::ptr client) {
+        userId_client.erase(client->getId());
+        address_client.erase(client->getAddress());
+
+        if (userId_client.empty()) {
+            assert("todo stop simulation" && false);
+        }
     }
 };
 }   // namespace server
