@@ -24,7 +24,10 @@
 			"label": "build",
 			"command": "make",
 			"problemMatcher": [],
-			"args": ["client", "server"],
+			"args": [
+				"client",
+				"server"
+			],
 			"options": {
 				"cwd": "${workspaceFolder}/action"
 			},
@@ -35,7 +38,9 @@
 			"group": {
 				"kind": "build",
 				"isDefault": true
-			}
+			},
+			"dependsOn": "copy SDL",
+			"dependsOrder": "parallel"
 		},
 		{
 			"type": "shell",
@@ -44,6 +49,19 @@
 			"problemMatcher": [],
 			"args": [
 				"clean"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+		},
+		{
+			"type": "shell",
+			"label": "copy SDL",
+			"command": "cp",
+			"problemMatcher": [],
+			"args": [
+				"./lib/SDL2/lib/x86/*.dll",
+				"./action/build/"
 			],
 			"options": {
 				"cwd": "${workspaceFolder}"

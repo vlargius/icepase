@@ -21,14 +21,12 @@ class Server final : public Engine {
   private:
 
     void setup() override {
-      Penguin::ptr penguin = World::get().add<server::Penguin>();
-      penguin->position.x = 10.f;
-      penguin->position.y = 10.f;
     }
 
     void frame() override {
       Network::get().processInput();
       Network::get().processDisconnect();
+      Network::get().respawn();
       Engine::frame();
       Network::get().processOutput();
     }

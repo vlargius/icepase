@@ -1,8 +1,5 @@
 #include "server.h"
 
 int main() {
-
-    Server{}.run();
-
-    return 0;
+    return Server{}.run();
 }

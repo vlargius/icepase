@@ -10,9 +10,10 @@ class Engine {
 public:
     bool isRunning = true;
 
-    void run() {
+    int run() {
         setup();
         loop();
+        return 0;
     }
 
 protected:

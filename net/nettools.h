@@ -32,9 +32,9 @@ inline void report(const std::string &msg = "", int error = 0) {
         std::cerr << "error::net: " << msg  << " - " << (error && buffer[0] ? std::string(buffer) : std::to_string(error)) << std::endl;
 }
 
-void closesocket(socket_type) {}
+inline void closesocket(socket_type) {}
 
-bool set_blocking(socket_type socket_, bool is_blocking) {
+inline bool set_blocking(socket_type socket_, bool is_blocking) {
     u_long state = !is_blocking;
     return ::ioctlsocket(socket_, FIONBIO, &state) == 0;
 }
@@ -60,8 +60,8 @@ inline void report(const std::string &msg = "", int error = 0) {
     std::cerr << "error::net:" + msg + " '" + std::string(strerror(error ? error : errno)) + "' " << std::endl; 
 }
 
-void closesocket(socket_type socket_) { ::close(socket_); }
-bool set_blocking(socket_type socket_, bool is_blocking) {
+inline void closesocket(socket_type socket_) { ::close(socket_); }
+inline bool set_blocking(socket_type socket_, bool is_blocking) {
     int flags = ::fcntl(socket_, F_GETFL);
     return ::fcntl(socket_, F_SETFL, flags | (is_blocking ? ~O_NONBLOCK : O_NONBLOCK));
 }

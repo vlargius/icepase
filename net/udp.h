@@ -37,7 +37,7 @@ class udp : public ISocket<udp> {
             if (lastError == WSAEWOULDBLOCK) {
                 return 0;
             } else if (lastError == WSAECONNRESET) {
-                std::cout << "connection reset from: " + address.to_string() << std::endl;
+                // std::cout << "connection reset from: " << address << std::endl;
                 return -WSAECONNRESET;
             } else {
                 report("udp::recieve_from");

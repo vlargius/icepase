@@ -1,2 +1,4 @@
 test/build/*
-action/build/**
+action/build/server**
+action/build/client**
+action/build/SDL**

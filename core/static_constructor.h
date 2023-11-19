@@ -4,7 +4,7 @@ template<void(*ctr_function)()>
 struct static_constructor {
     struct constructor {
         constructor() { ctr_function(); }
-        static constexpr void run() {};
+        constexpr static void run(){};
     };
     static constructor c;
 };

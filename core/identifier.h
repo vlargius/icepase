@@ -12,16 +12,16 @@ class GenId {
       explicit GenId() = default;
       explicit GenId(const IdType &id) : rawId(id) {}
 
-      explicit operator size_t() const { return rawId; }
-      GenId &operator=(const GenId &other) = default;
-      bool operator==(const GenId &other) const { return rawId == other.rawId; }
-      operator bool() const { return valid(); }
+      inline explicit operator size_t() const { return rawId; }
+      inline GenId &operator=(const GenId &other) = default;
+      inline bool operator==(const GenId &other) const { return rawId == other.rawId; }
+      inline operator bool() const { return valid(); }
 
-      bool valid() const { return rawId != InvalidValue; }
+      inline bool valid() const { return rawId != InvalidValue; }
 
       friend std::hash<GenId>;
 
-      static GenId next() {
+      inline static GenId next() {
         static IdType counter = InvalidValue;
         return GenId{++counter};
       }
@@ -42,12 +42,12 @@ struct is_serializable<GenId<Tag, IdType, InvalidValue>> {
 
 namespace std {
 template <class Tag, class IdType, IdType InvalidValue> struct hash<GenId<Tag, IdType, InvalidValue>> {
-      size_t operator()(const GenId<Tag, IdType, InvalidValue> &id) const noexcept { return id.rawId; }
+      inline size_t operator()(const GenId<Tag, IdType, InvalidValue> &id) const noexcept { return id.rawId; }
 };
 }   // namespace std
 
 template <class Tag, class IdType, IdType InvalidValue>
-std::ostream& operator<<(std::ostream &os, const GenId<Tag, IdType, InvalidValue> &id) {
+inline std::ostream& operator<<(std::ostream &os, const GenId<Tag, IdType, InvalidValue> &id) {
   os << std::hash<GenId<Tag, IdType, InvalidValue>>{}(id);
   return os;
 }

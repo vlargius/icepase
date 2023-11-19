@@ -19,7 +19,7 @@
             "program": "${workspaceFolder}/action/build/server",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceFolder}/action/build/",
             "environment": [],
             "console": "integratedTerminal"
         },
@@ -30,7 +30,7 @@
             "program": "${workspaceFolder}/action/build/client",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceFolder}/action/build/",
             "environment": [],
             "console": "integratedTerminal"
         },

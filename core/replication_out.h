@@ -51,6 +51,7 @@ class Output {
                     Object::ptr object = linker.get(netId);
                     Header{command.action, netId, object->getType()}.serialize(stream);
                     command.remove(object->write(stream, command.fields));
+                    command.action = Action::Update;
                 }
             }
         }
@@ -58,7 +59,7 @@ class Output {
         for (const NetId id : removeIds) {
             netId_command.erase(id);
         }
-        netId_command.clear();
+        removeIds.clear();
     }
 
   private:

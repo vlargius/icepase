@@ -6,9 +6,11 @@
 
 class MoveList {
   public:
-
     bool empty() const { return moves.empty(); }
     size_t size() const { return moves.size(); }
+    std::deque<Move>::iterator begin() { return moves.begin(); }
+    std::deque<Move>::iterator end() { return moves.end(); }
+
     const Move& getLastMove() const { return moves.back(); }
     const float getLastTimestamp() const { return lastTimestamp; }
 
@@ -34,8 +36,6 @@ class MoveList {
         moves.pop_front();
       }
     }
-
-    // void process(Action, int key_code)
 
   private:
     std::deque<Move> moves;

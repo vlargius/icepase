@@ -21,6 +21,7 @@ class Object {
     bool isMarkedDestroyed = false;
 
     Object() = default;
+    virtual ~Object() {};
 
     virtual ObjTypeId getType() const { return type; }
     virtual ObjFields getFields() const { return 1; }

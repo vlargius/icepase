@@ -52,7 +52,7 @@ class Network final : public BaseNetwork {
 
     void updateFields(NetId net_id, ObjFields fields) {
         for (const auto &[userId, client] : userId_client) {
-            client->replication.create(net_id, fields);
+            client->replication.markField(net_id, fields);
         }
     }
 
@@ -66,6 +66,12 @@ class Network final : public BaseNetwork {
         }
         for (Proxy::ptr client : disconnectedClients)
             processDisconnect(client);
+    }
+
+    void respawn() {
+        for (auto &[userId, client] : userId_client) {
+            client->respawn(false);
+        }
     }
 
   private:
@@ -106,13 +112,14 @@ class Network final : public BaseNetwork {
             Proxy::ptr newClient = std::make_shared<Proxy>(address, name, UserId::next());
             address_client[address] = newClient;
             userId_client[newClient->getId()] = newClient;
+            newClient->respawn(true);
+
             sendConnectResponse(newClient);
-
-            std::cout << "'" << name << "' connected with id " << newClient->getId() << std::endl;
-
             for (const auto &[netId, object] : linker.getNetIdObject()) {
                 newClient->replication.create(netId, object->getFields());
             }
+
+            std::cout << "'" << name << "' connected with id " << newClient->getId() << std::endl;
         } else {
             assert("todo log not joining packet type from a new address" && false);
         }
@@ -164,6 +171,7 @@ class Network final : public BaseNetwork {
     }
 
     void processDisconnect(Proxy::ptr client) {
+        std::cout << "disconnect client '" << client->getName() << "' with id " << client->getId() << std::endl;
         userId_client.erase(client->getId());
         address_client.erase(client->getAddress());
 

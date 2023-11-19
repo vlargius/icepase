@@ -1,6 +1,8 @@
 #pragma once
 
-#include "common/penguin_base.h"
+#include <common/penguin_base.h>
+#include <graphics/renderer.h>
+#include <graphics/texture_cash.h>
 
 namespace client {
 
@@ -8,10 +10,15 @@ class Penguin final : public PenguinBase {
   public:
     using ptr = std::shared_ptr<Penguin>;
 
-    Penguin() = default;
+    Penguin() {
+      sprite = std::make_shared<graphics::renderer::Sprite>();
+      sprite->texture = graphics::texture_cash::get("penguin");
+      sprite->scale = 0.3f;
+    }
 
     void update() override {
-      std::cout << "position: " << position.x << ", " << position.y << std::endl;
+      sprite->location.x = position.x;
+      sprite->location.y = position.y;
     }
 
     void read(instream &stream) override {
@@ -33,5 +40,7 @@ class Penguin final : public PenguinBase {
       static_constructor<&Penguin::static_init>::c.run();
       Penguin::Factory::add<Object, Penguin>();
     }
+
+    graphics::renderer::Sprite::ptr sprite;
 };
 }   // namespace client

@@ -31,7 +31,7 @@ struct Winsock2Initializer {
 
 namespace net {
 
-address::ptr make_address(const std::string &address_str, int family = AF_INET) {
+inline address::ptr make_address(const std::string &address_str, int family = AF_INET) {
     const std::string &defaultService = "1111";
 
     auto separator = address_str.find_last_of(':');
@@ -66,7 +66,7 @@ address::ptr make_address(const std::string &address_str, int family = AF_INET) 
     return out;
 }
 
-udp::ptr make_udp(int family = AF_INET) {
+inline udp::ptr make_udp(int family = AF_INET) {
     socket_type rawSocket = ::socket(family, SOCK_DGRAM, IPPROTO_UDP);
     int optval = 1;
     setsockopt(rawSocket, SOL_SOCKET, SO_REUSEADDR, (const char*)&optval, sizeof optval);
@@ -76,7 +76,7 @@ udp::ptr make_udp(int family = AF_INET) {
     return nullptr;
 }
 
-tcp::ptr make_tcp(int family = AF_INET) {
+inline tcp::ptr make_tcp(int family = AF_INET) {
     socket_type rawSocket = ::socket(family, SOCK_STREAM, IPPROTO_TCP);
     int optval = 1;
     setsockopt(rawSocket, SOL_SOCKET, SO_REUSEADDR, (const char*)&optval, sizeof optval);
@@ -86,7 +86,7 @@ tcp::ptr make_tcp(int family = AF_INET) {
     return nullptr;
 }
 
-fd_set *fill(const std::set<tcp::ptr> *sockets, fd_set &out) {
+inline fd_set *fill(const std::set<tcp::ptr> *sockets, fd_set &out) {
     if (sockets) {
         FD_ZERO(&out);
         for (const tcp::ptr &socket : *sockets) {
@@ -98,7 +98,7 @@ fd_set *fill(const std::set<tcp::ptr> *sockets, fd_set &out) {
     }
 }
 
-void fill(const std::set<tcp::ptr> *sockets, const fd_set &set, std::set<tcp::ptr> *out) {
+inline void fill(const std::set<tcp::ptr> *sockets, const fd_set &set, std::set<tcp::ptr> *out) {
     if (sockets && out) {
         out->clear();
         for (const tcp::ptr &socket : *sockets) {
@@ -109,7 +109,7 @@ void fill(const std::set<tcp::ptr> *sockets, const fd_set &set, std::set<tcp::pt
     }
 }
 
-int select(const std::set<tcp::ptr> *in_read, std::set<tcp::ptr> *out_read,
+inline int select(const std::set<tcp::ptr> *in_read, std::set<tcp::ptr> *out_read,
     const std::set<tcp::ptr> *in_write, std::set<tcp::ptr> *out_write,
     const std::set<tcp::ptr> *in_except, std::set<tcp::ptr> *out_except) {
 
