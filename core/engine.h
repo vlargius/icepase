@@ -1,7 +1,5 @@
 #pragma once
 
-#include <iostream>
-
 #include "timer.h"
 #include "world.h"
 

@@ -37,6 +37,7 @@ Texture::ptr get(const char *name) { return name_texture[name]; }
 
 void load(SDL_Renderer *renderer) {
     name_texture["penguin"] = load_texture(renderer, "./assets/penguin.png");
+    name_texture["ball"] = load_texture(renderer, "./assets/ball.png");
 }
 
 }   // namespace texture_cash

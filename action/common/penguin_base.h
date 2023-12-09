@@ -1,16 +1,7 @@
 #pragma once
 
 #include "object.h"
-
-struct Point2 {
-  float x = 0.f;
-  float y = 0.f;
-};
-
-template<>
-struct is_serializable<Point2> {
-  static constexpr bool value = true;
-};
+#include "math/point.h"
 
 class PenguinBase : public Object {
   public:

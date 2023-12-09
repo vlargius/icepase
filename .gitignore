@@ -2,3 +2,4 @@ test/build/*
 action/build/server**
 action/build/client**
 action/build/SDL**
+rts/build/client**

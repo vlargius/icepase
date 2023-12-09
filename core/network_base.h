@@ -20,12 +20,12 @@ class BaseNetwork {
 
   protected:
 
-
     bool init(const net::address &address) {
         socket = net::make_udp();
-        if (!socket || !socket->bind(address) || socket->set_blocking_mode(false)) {
+        if (!socket || !socket->bind(address)) {
             return false;
         }
+        socket->set_blocking_mode(false); // todo check
         return true;
     }
 
