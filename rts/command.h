@@ -1,28 +1,26 @@
 #pragma once
 
 #include <memory>
-#include <instream.h>
-#include <linker.h>
-#include <outstream.h>
 #include <user.h>
 
-#include "network.h"
+#include <linker.h>
 
+class instream;
+class outstream;
 
 class Command {
   public:
     using ptr = std::shared_ptr<Command>;
-    enum class Type { Invalid, Attack, Move };
+    enum class Type { Invalid, Attack, Move, Count };
 
-    Command() : type(Type::Invalid) {}
+    static Command::ptr create(instream& stream);
 
-    virtual void write(outstream &stream) = 0;
+    Command() = default;
+    virtual void write(outstream &stream);
+    virtual void read(instream &stream) = 0;
     virtual void process() = 0;
 
-  protected:
     Type type;
     NetId netId;
     UserId userId;
-
-    virtual void read(instream &stream) = 0;
 };

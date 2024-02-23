@@ -1,4 +1,4 @@
-OBJS = main.cpp
+OBJS = command.cpp penguin.cpp input.cpp main.cpp
 INC = -I./../core -I./../net -I./../action
 FLAGS = -D_WIN -std=c++20 -g
 
@@ -8,8 +8,8 @@ RENDER_FLAGS = -lSDL2main -lSDL2 -lSDL2_image -lShell32 -lWs2_32 -Xlinker /subsy
 CC = clang++
 BLDPATH = ./build
 
-.PHONY: client server
-
 all:
-# $(CC) $(OBJS) $(INC) $(RENDER_INC) $(LIB) $(RENDER_FLAGS) $(FLAGS) -o $(BLDPATH)/client.exe
-	$(CC) $(OBJS) $(INC) $(FLAGS) -o $(BLDPATH)/client.exe
+	$(CC) $(OBJS) $(INC) $(RENDER_INC) $(LIB) $(RENDER_FLAGS) $(FLAGS) -o $(BLDPATH)/client.exe
+
+test:
+	$(CC) test.cpp $(INC) $(FLAGS) -o $(BLDPATH)/test.exe

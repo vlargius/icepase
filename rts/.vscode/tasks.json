@@ -17,7 +17,40 @@
 			"group": {
 				"kind": "build",
 				"isDefault": true
+			},
+			"dependsOn": "copy SDL",
+			"dependsOrder": "parallel"
+		},
+		{
+			"type": "shell",
+			"label": "test",
+			"command": "make",
+			"problemMatcher": [],
+			"args": [ "test" ],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"presentation": {
+				"revealProblems": "onProblem",
+				"reveal": "silent",
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
 			}
 		},
+		{
+			"type": "shell",
+			"label": "copy SDL",
+			"command": "cp",
+			"problemMatcher": [],
+			"args": [
+				"./lib/SDL2/lib/x86/*.dll",
+				"./rts/build/"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/../"
+			},
+		}
     ]
 }

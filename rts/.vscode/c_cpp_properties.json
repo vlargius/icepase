@@ -3,27 +3,32 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/../core/**",
                 "${workspaceFolder}/../net/**",
+                "${workspaceFolder}/../core/**",
                 "${workspaceFolder}/../lib/SDL2/include/**",
-                "${workspaceFolder}/**",
-                "D:/icepase/core"
+                "${workspaceFolder}/**"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE",
+                "NTDDI_VERSION",
+                "_WIN32_WINNT",
+                "_WIN32_WINNT_WIN10",
+                "_WINSOCKAPI_",
                 "_WIN"
             ],
             "windowsSdkVersion": "10.0.19041.0",
-            "compilerPath": "cl.exe",
+            "compilerPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\Llvm\\bin\\clang++.exe",
             "cStandard": "c17",
             "cppStandard": "c++23",
-            "intelliSenseMode": "windows-msvc-x64",
-            "configurationProvider": "ms-vscode.makefile-tools",
+            "intelliSenseMode": "windows-clang-x86",
             "browse": {
                 "path": [
-                    "${workspaceFolder}/../**"
+                    "${workspaceFolder}/../core",
+                    "${workspaceFolder}/../net",
+                    "${workspaceFolder}/../lib/SDL2/include",
+                    "${workspaceFolder}/**"
                 ]
             }
         }

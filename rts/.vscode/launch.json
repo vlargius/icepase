@@ -7,8 +7,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/client.exe",
             "args": [
-                "46666",
-                "test"
+                "master"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build/",
@@ -16,10 +15,24 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "master",
+            "name": "peer",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/client.exe",
+            "args": [
+                "peer",
+                "localhost:6666"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/",
+            "environment": [],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "test",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/test.exe",
             "args": [
                 "127.0.0.1:12345",
                 "test"

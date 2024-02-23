@@ -39,6 +39,9 @@
             "intelliSenseMode": "windows-clang-x86",
             "browse": {
                 "path": [
+                    "${workspaceFolder}/../core",
+                    "${workspaceFolder}/../net",
+                    "${workspaceFolder}/../lib/SDL2/include",
                     "${workspaceFolder}/**"
                 ]
             }
