@@ -15,6 +15,7 @@ class GenId {
       inline explicit operator size_t() const { return rawId; }
       inline GenId &operator=(const GenId &other) = default;
       inline bool operator==(const GenId &other) const { return rawId == other.rawId; }
+      inline bool operator<(const GenId &other) const { return rawId < other.rawId; }
       inline operator bool() const { return valid(); }
 
       inline bool valid() const { return rawId != InvalidValue; }

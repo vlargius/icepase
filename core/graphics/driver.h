@@ -8,6 +8,7 @@ namespace graphics {
 class Driver {
   public:
     const SDL_Color backgroundColor{190, 151, 254, 0};
+    Window window;
 
     Driver() {}
     ~Driver() {
@@ -15,12 +16,13 @@ class Driver {
         SDL_DestroyRenderer(rawRenderer);
     }
 
-    bool init() {
+    bool init(int size_x = 800, int size_y = 600) {
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
             std::cerr << "SDL init error: " << SDL_GetError() << std::endl;
             return false;
         }
-        Window window;
+
+        window.create(size_x, size_y);
         if (!window.get())
             return false;
 
@@ -31,9 +33,7 @@ class Driver {
         }
 
         SDL_SetRenderDrawColor(rawRenderer, backgroundColor.r, backgroundColor.g, backgroundColor.b, SDL_ALPHA_OPAQUE);
-        const int sizeX = 1280;
-        const int sizeY = 720;
-        SDL_RenderSetLogicalSize(rawRenderer, sizeX, sizeY);
+        SDL_RenderSetLogicalSize(rawRenderer, size_x, size_y);
         return true;
     }
 

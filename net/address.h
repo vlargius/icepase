@@ -32,6 +32,7 @@ class address {
     const bool operator==(const address &other) const {
         return ::strcmp(other.raw()->sa_data, raw()->sa_data) == 0;
     }
+    const sockaddr_in *get_sockaddr_in() const { return reinterpret_cast<const sockaddr_in *>(&rawAddress); }
 
   private:
     sockaddr_in6 rawAddress;
@@ -43,7 +44,10 @@ class address {
 namespace std {
 template <> struct hash<net::address> {
     size_t operator()(const net::address &address_) const {
-      return std::hash<const char*>{}(address_.raw()->sa_data);
+        size_t hash = 17;
+        hash = hash * 31 + std::hash<uint32_t>{}(address_.get_sockaddr_in()->sin_addr.s_addr);
+        hash = hash * 31 + std::hash<uint16_t>{}(address_.get_sockaddr_in()->sin_port);
+        return hash;
     }
 };
 }   // namespace std

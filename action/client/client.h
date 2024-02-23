@@ -1,17 +1,18 @@
 #pragma once
 
+#include <graphics/renderer.h>
+
 #include "engine.h"
 #include "network.h"
 #include "input.h"
 #include "penguin.h"
-#include "graphics/renderer.h"
 
 using namespace client;
 
 class Client : public Engine {
   public:
     bool init() {
-        if (!graphics::renderer::get().init())
+        if (!graphics::Renderer::get().init())
           return false;
 
         const std::string defaultAddress = "localhost:6666";   // todo move to default config
@@ -34,7 +35,7 @@ class Client : public Engine {
                 if (event.type == SDL_EventType::SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE) {
                     isRunning = false;
                 } else if (event.type == SDL_EventType::SDL_KEYDOWN && event.key.keysym.sym == SDLK_BACKSLASH) {
-                    graphics::renderer::get().debug = !graphics::renderer::get().debug;
+                    graphics::Renderer::get().debug = !graphics::Renderer::get().debug;
                 } else {
                     processEvent(event);
                 }
@@ -61,7 +62,7 @@ class Client : public Engine {
         Input::get().update();
         Engine::frame();
         Network::get().processInput();
-        graphics::renderer::get().render();
+        graphics::Renderer::get().render();
         Network::get().processOutput();
     }
 };

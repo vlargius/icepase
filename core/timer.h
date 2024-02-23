@@ -10,11 +10,10 @@ class Timer {
     bool elapsed() const;
     float start() const { return startTime; }
 
-    void setDuration(float value);
+    float duration = 0.f;
     void reset();
 
   private:
-    float duration = 0.f;
     float startTime = -1.f;
     float endTime = -1.f;
 };
@@ -23,8 +22,6 @@ namespace timing {
 using clock = std::chrono::high_resolution_clock;
 namespace {
 const float frameDuration = 0.0166666667f;   // frame lock at 60fps
-// const float frameDuration = .24f;
-// const float frameDuration = 1.f;
 const clock::time_point start = clock::now();
 Timer frameTimer{frameDuration};
 float deltaTime = 0.f;
@@ -36,6 +33,7 @@ inline double current() {
     return static_cast<double>(ms) / 1000;
 }
 
+inline float& frame_duration() { return frameTimer.duration; }
 inline float delta() { return deltaTime; }
 inline float frame_start() { return frameTimer.start(); }
 

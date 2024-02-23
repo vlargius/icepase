@@ -38,8 +38,14 @@ public:
         }
     }
 
-private:
-    std::vector<Object::ptr> objects;
+    template<typename UnaryPredicate>
+    Object::ptr find(UnaryPredicate predicate) {
+        auto it = std::find_if(objects.begin(), objects.end(), predicate);
+        return it == objects.end() ? nullptr : *it;
+    }
 
+private:
     World() = default;
+
+    std::vector<Object::ptr> objects;
 };

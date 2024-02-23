@@ -8,16 +8,19 @@
 
 namespace graphics {
 
-class renderer {
+class Renderer {
   public:
-    using Sprite = SpriteGen<renderer>;
 
     bool debug = false;
+    Driver driver;
 
-    static renderer &get() {
-        static renderer instance;
+    static Renderer &get() {
+        static Renderer instance;
         return instance;
     }
+
+    float relativeX(int x) const { return (x - view.x) / (float)view.w; }
+    float relativeY(int y) const { return (y - view.y) / (float)view.h; }
 
     void add(const Sprite *sprite) {
       sprites.push_back(sprite);
@@ -28,7 +31,9 @@ class renderer {
     }
 
     bool init() {
-        if (!driver.init())
+        int sizeX = 800;
+        int sizeY = 600;
+        if (!driver.init(sizeX, sizeY))
           return false;
 
         SDL_Rect viewport;
@@ -38,32 +43,32 @@ class renderer {
         view.w = 100;
         view.h = 100;
 
-        texture_cash::load(raw());
-
+        graphics::texture_cash::load(raw());
         return true;
     }
 
     SDL_Renderer * raw() { return driver.get(); }
 
     void render() {
-        driver.clear();
-        renderSprites();
-        driver.present();
+      driver.clear();
+      renderSprites();
+      driver.present();
     }
 
   private:
-    Driver driver;
     SDL_Rect view;
     std::vector<const Sprite *> sprites;
 
     void renderSprites() {
         for (const Sprite *sprite : sprites) {
           if (debug)
-            sprite->debug(view);
+            sprite->debug(raw(), view);
           else
-            sprite->render(view);
+            sprite->render(raw(), view);
         }
     }
 };
+
+inline extern void register_sprite(const Sprite *sprite) { graphics::Renderer::get().add(sprite); }
 
 }   // namespace graphics

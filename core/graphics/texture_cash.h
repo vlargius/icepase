@@ -29,13 +29,19 @@ static Texture::ptr load_texture(SDL_Renderer *renderer, const char *path) {
     return std::make_shared<Texture>(w, h, texture);
 }
 std::unordered_map<const char *, Texture::ptr> name_texture;
-
 }   // namespace
 
 namespace texture_cash {
-Texture::ptr get(const char *name) { return name_texture[name]; }
+inline extern Texture::ptr get(const char *name) {
+    auto out = name_texture.find(name);
+    if (out == name_texture.end()) {
+        std::cerr << "can't load texture: " << name << std::endl;
+        return nullptr;
+    }
+    return out->second;
+}
 
-void load(SDL_Renderer *renderer) {
+inline extern void load(SDL_Renderer *renderer) {
     name_texture["penguin"] = load_texture(renderer, "./assets/penguin.png");
     name_texture["ball"] = load_texture(renderer, "./assets/ball.png");
 }

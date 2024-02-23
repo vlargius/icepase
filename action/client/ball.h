@@ -2,7 +2,6 @@
 
 #include <common/ball_base.h>
 #include <graphics/renderer.h>
-#include <graphics/texture_cash.h>
 
 namespace client {
 
@@ -11,7 +10,7 @@ class Ball final : public BallBase {
     using ptr = std::shared_ptr<Ball>;
 
     Ball() {
-      sprite = std::make_shared<graphics::renderer::Sprite>();
+      sprite = std::make_shared<graphics::Renderer::Sprite>();
       sprite->texture = graphics::texture_cash::get("ball");
       sprite->scale = 0.3f;
     }
@@ -41,6 +40,6 @@ class Ball final : public BallBase {
       Ball::Factory::add<Ball, Ball>();
     }
 
-    graphics::renderer::Sprite::ptr sprite;
+    graphics::Sprite::ptr sprite;
 };
 }   // namespace client

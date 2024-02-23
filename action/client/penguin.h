@@ -2,7 +2,6 @@
 
 #include <common/penguin_base.h>
 #include <graphics/renderer.h>
-#include <graphics/texture_cash.h>
 
 namespace client {
 
@@ -11,7 +10,7 @@ class Penguin final : public PenguinBase {
     using ptr = std::shared_ptr<Penguin>;
 
     Penguin() {
-      sprite = std::make_shared<graphics::renderer::Sprite>();
+      sprite = std::make_shared<graphics::Sprite>();
       sprite->texture = graphics::texture_cash::get("penguin");
       sprite->scale = 0.3f;
     }
@@ -41,6 +40,6 @@ class Penguin final : public PenguinBase {
       Penguin::Factory::add<Object, Penguin>();
     }
 
-    graphics::renderer::Sprite::ptr sprite;
+    graphics::Sprite::ptr sprite;
 };
 }   // namespace client
