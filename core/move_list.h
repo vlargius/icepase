@@ -24,11 +24,15 @@ class MoveList {
       return moves.back();
     }
 
-    void add(const Move &move) {
+    bool add(const Move &move) {
         const float timeStamp = move.getTimestamp();
-        const float deltaTime = lastTimestamp >= 0.f ? timeStamp - lastTimestamp : 0.f;
-        lastTimestamp = timeStamp;
-        moves.emplace_back(move.getState(), timeStamp, deltaTime);
+        if (timeStamp > lastTimestamp) {
+            const float deltaTime = lastTimestamp >= 0.f ? timeStamp - lastTimestamp : 0.f;
+            lastTimestamp = timeStamp;
+            moves.emplace_back(move.getState(), timeStamp, deltaTime);
+            return true;
+        }
+        return false;
     }
 
     void remove(float timestamp) {

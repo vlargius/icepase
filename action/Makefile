@@ -1,5 +1,5 @@
 CLIENT_OBJS = main.cpp
-SERVER_OBJS = main.cpp server/penguin.cpp
+SERVER_OBJS = main.cpp server/penguin.cpp server/replication_transmission.cpp
 INC = -I./../core -I./../net -I./../action
 FLAGS = -D_WIN -std=c++20 -g
 

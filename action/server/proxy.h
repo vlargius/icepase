@@ -10,6 +10,7 @@
 #include "user.h"
 #include "world.h"
 #include "penguin.h"
+#include "notification.h"
 
 namespace server {
 class Proxy {
@@ -20,6 +21,7 @@ class Proxy {
     replication::Output replication;
     bool isMoveProcessed = false;
     float respawnAt = -1.f;
+    delivery::Notification notification {false, true};
 
     Proxy(const net::address &address_, const std::string &name_, UserId user_id_)
         : address(address_), name(name_), userId(user_id_) {

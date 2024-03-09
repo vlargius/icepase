@@ -12,7 +12,7 @@ class Penguin final : public PenguinBase {
     Penguin() {
       sprite = std::make_shared<graphics::Sprite>();
       sprite->texture = graphics::texture_cash::get("penguin");
-      sprite->scale = 0.3f;
+      sprite->scale = 0.2f;
     }
 
     void update() override {

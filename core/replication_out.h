@@ -6,6 +6,7 @@
 #include "linker.h"
 #include "outstream.h"
 #include "replication_header.h"
+#include "replication_transmission.h"
 
 namespace replication {
 
@@ -25,6 +26,10 @@ class Output {
             if (action == Action::Destroy)
                 action = Action::Update;
         }
+        void createAck() {
+            if (action == Action::Create)
+                action = Action::Update;
+        }
     };
 
     void create(NetId net_id, ObjFields fields) { netId_command[net_id] = Command(fields); }
@@ -33,6 +38,8 @@ class Output {
 
     void markField(NetId net_id, ObjFields fields) { netId_command[net_id].add(fields); }
 
+    void createAck(NetId net_id) { netId_command[net_id].createAck(); }
+
     void remove(NetId net_id) { netId_command.erase(net_id); }
 
     template <class Rpc, class... Args> void call(outstream &stream, const Args &...args) {
@@ -40,8 +47,8 @@ class Output {
         Rpc{args...}.serialize(stream);
     }
 
-    void process(outstream &stream, const Linker &linker) {
-        for (auto & [netId, command] : netId_command) {
+    inline void process(outstream &stream, const Linker &linker, TransmissionData *data) {
+        for (auto &[netId, command] : netId_command) {
             if (command.hasUpdate()) {
                 if (command.action == Action::Destroy) {
                     Header{command.action, netId}.serialize(stream);
@@ -53,6 +60,8 @@ class Output {
                     command.remove(object->write(stream, command.fields));
                     command.action = Action::Update;
                 }
+                data->addTransmission(netId, command.action, command.fields);
+                command.remove(command.fields);
             }
         }
 

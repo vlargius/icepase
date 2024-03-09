@@ -21,7 +21,7 @@ class Client : public Engine {
 
         graphics::Renderer::get().driver.window.setTitle(name);
 
-        timing::frame_duration() = .2f;
+        timing::frameTimer.duration = .016f;
 
         if (isServer) {
             return Network::get().initMaster(*address, name);

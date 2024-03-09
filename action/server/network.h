@@ -10,6 +10,7 @@
 #include "packet.h"
 #include "proxy.h"
 #include "timer.h"
+#include "replication_transmission.h"
 
 namespace server {
 class Network final : public BaseNetwork {
@@ -44,6 +45,7 @@ class Network final : public BaseNetwork {
 
     void processOutput() {
         for (const auto &[address, client] : address_client) {
+            client->notification.processTimedOut();
             if (client->isMoveProcessed) {
                 processOutput(client);
             }
@@ -132,8 +134,8 @@ class Network final : public BaseNetwork {
         Move move;
         for (; moveCount > 0; --moveCount) {
             move.serialize(stream);
-            proxy->unprocessedMoves.add(move);
-            proxy->isMoveProcessed = true;
+            if (proxy->unprocessedMoves.add(move))
+                proxy->isMoveProcessed = true;
         }
     }
 
@@ -148,7 +150,9 @@ class Network final : public BaseNetwork {
             break;
         }
         case PacketType::Input: {
-            processUserInput(stream, proxy);
+            if (proxy->notification.read(stream)) {
+                processUserInput(stream, proxy);
+            }
             break;
         }
         default:
@@ -160,13 +164,18 @@ class Network final : public BaseNetwork {
         outstream replicationPacket;
         replicationPacket.write<(int) PacketType::Max>(PacketType::Replication);
 
+        delivery::TaggedPacket *packet = proxy->notification.write(replicationPacket);
+
         replicationPacket.write(proxy->isMoveProcessed);
         if (proxy->isMoveProcessed) {
             replicationPacket.write(proxy->unprocessedMoves.getLastTimestamp());
             proxy->isMoveProcessed = false;
         }
 
-        proxy->replication.process(replicationPacket, linker);
+        replication::TransmissionData *transmission = new replication::TransmissionData();
+        proxy->replication.process(replicationPacket, linker, transmission);
+        packet->data.reset(transmission);
+
         send(replicationPacket, proxy->getAddress());
     }
 

@@ -25,7 +25,7 @@ ObjFields Penguin::write(outstream &stream, const ObjFields fields) {
 }
 
 void Penguin::update() {
-    const float dt = timing::frame_duration();
+    const float dt = timing::frameTimer.duration;
     const float speed = .1f;
 
     position.x += (target.x - position.x) * dt;

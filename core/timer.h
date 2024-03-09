@@ -21,11 +21,12 @@ class Timer {
 namespace timing {
 using clock = std::chrono::high_resolution_clock;
 namespace {
-const float frameDuration = 0.0166666667f;   // frame lock at 60fps
 const clock::time_point start = clock::now();
-Timer frameTimer{frameDuration};
 float deltaTime = 0.f;
-}   // namespace
+// frame lock at 60fps
+const float frameDuration = 0.0166666667f;
+}
+static inline Timer frameTimer{frameDuration};
 
 inline double current() {
     const auto now = clock::now();
@@ -33,7 +34,11 @@ inline double current() {
     return static_cast<double>(ms) / 1000;
 }
 
-inline float& frame_duration() { return frameTimer.duration; }
+inline uint64_t current_ms() {
+    const auto now = clock::now();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count();
+}
+
 inline float delta() { return deltaTime; }
 inline float frame_start() { return frameTimer.start(); }
 
